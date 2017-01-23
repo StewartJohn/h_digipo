@@ -21,6 +21,6 @@ Sources in the /ext directory. To distribute, cd to /ext and do this:
 
 zip -r ..\digipo.zip .
 
-Then upload to the Chrome web store. The example lives here: https://chrome.google.com/webstore/detail/digipo/dllkpndfjcodlhlfiiogdedeipjphkgk. But you can sign up and publish your own variant.
+Then upload the zip to the Chrome web store. The example lives here: https://chrome.google.com/webstore/detail/digipo/dllkpndfjcodlhlfiiogdedeipjphkgk. But you can sign up and publish your own variant.
 
 
