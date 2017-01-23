@@ -5,13 +5,15 @@ See https://hypothes.is/blog/a-hypothesis-powered-toolkit-for-fact-checkers/ for
 
 # The embed script
 
-In lib\tpl\dokuwiki\main,php, above <-- wikipage stop -->, put this:
+In <tt>lib\tpl\dokuwiki\main.php</tt>, above <tt>&lt;-- wikipage stop --></tt>, put this:
 
+<pre>
 &lt;script>
 var s = document.createElement('script');
 s.src = "http://jonudell.net/h/doku_h_embed.js"; // or serve your own copy
 document.querySelector('.page').appendChild(s);
 &lt;/script>
+</pre>
 
 # The Chrome extension
 
