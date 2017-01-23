@@ -1,10 +1,11 @@
 # h_digipo
-An annotation-powered toolkit for fact checking and investigative journalism
+An annotation-powered toolkit for fact checking and investigative journalism. Works with Doku wiki and Hypothesis. (Can be adapted for any wiki, or indeed any content management system.)
+
+See https://hypothes.is/blog/a-hypothesis-powered-toolkit-for-fact-checkers/ for description and video demos.
 
 # The embed script
 
 In lib\tpl\dokuwiki\main,php, above <-- wikipage stop -->, put this:
-
 
 &lt;script>
 var s = document.createElement('script');
