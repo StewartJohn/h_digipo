@@ -1,0 +1,61 @@
+<html>
+<head>
+<style>
+body { font-family:verdana; margin:.5in }
+img { margin-bottom:40px }
+</style>
+</head>
+<body>
+<p>
+<a href="http://digipo.io"><img src="http://digipo.io/lib/exe/fetch.php?media=wiki:logo.png" scale="0"></a>
+</p>
+
+<p id="doc">
+Connect __PAGE__ to a <a target="_blank" href="http://digipo.io/doku.php?id=digipo:analysis:latest_news_analysis">DigiPo investigation</a>. 
+</p>
+
+<div id="digipo_page_container"></div>
+
+<p>
+and/or
+</p>
+
+<p>
+Classify the page by <a target="_blank" href="http://digipo.io/doku.php?id=digipo:analysis:status_definitions">status</a> or <a target="_blank" href="http://digipo.io/doku.php?id=digipo:materials:article_types">article type</a>.
+</p>
+
+<select id="digipo_categories">
+<option>-- CHOOSE STATUS OR TYPE  --</option>
+<option>digipo:fact:complicated</option>
+<option>digipo:fact:true</option>
+<option>digipo:fact:mostly-true</option>
+<option>digipo:fact:mixed</option>
+<option>digipo:fact:mostly-false</option>
+<option>digipo:fact:false</option>
+<option>digipo:probability:highly-likely</option>
+<option>digipo:probability:likely</option>
+<option>digipo:probability:unclear</option>
+<option>digipo:probability:unlikely</option>
+<option>digipo:probability:highly-unlikely</option>
+<option>digipo:article-type:hoax</option>
+<option>digipo:article-type:disinformation</option>
+<option>digipo:article-type:misinformation</option>
+<option>digipo:article-type:sponsored-content</option>
+<option>digipo:article-type:clickbait</option>
+<option>digipo:article-type:satire</option>
+</select>
+
+<p>
+<input id="wayback" type="checkbox" checked="checked" /> Save the page to the <a target="_blank" href="https://archive.org/web/">Wayback Machine</a>
+
+<p>
+<input id="go" type="button" value="Go"></input>
+</p>
+
+<script src="lib.js"></script>
+<script src="tagpage.js"></script>
+
+</body>
+
+
+</html>
