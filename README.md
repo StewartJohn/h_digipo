@@ -3,7 +3,9 @@ An annotation-powered toolkit for fact checking and investigative journalism. Wo
 
 See https://hypothes.is/blog/a-hypothesis-powered-toolkit-for-fact-checkers/ for description and video demos.
 
-# The embed script
+The user guide for the DigiPo extension: http://digipo.io/doku.php?id=digipo:materials:digipo_extension
+
+## The embed script
 
 In <tt>lib\tpl\dokuwiki\main.php</tt>, above <tt>&lt;-- wikipage stop --></tt>, put this:
 
@@ -15,7 +17,11 @@ document.querySelector('.page').appendChild(s);
 &lt;/script>
 </pre>
 
-# The Chrome extension
+##The CORS proxy
+
+The embed script relies on https://github.com/judell/h_cors for now, because Hypothesis doesn't support CORS at /api/annotations (but will eventually)
+
+## The Chrome extension
 
 Sources in the /ext directory. To distribute, cd to /ext and do this:
 
