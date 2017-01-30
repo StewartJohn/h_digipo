@@ -57,7 +57,6 @@ function go() {
 	var options = {
 		method: 'POST',
 		url: 'https://h.jonudell.info/create?token=' + token + '&url=' + encoded_uri,
-		params: null,
 		headers: {"Content-type":"application/json" },
 		params: make_annotation_payload_with_only_tags(unencoded_uri, doctitle, user, tags)
 	};

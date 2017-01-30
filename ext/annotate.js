@@ -6,9 +6,11 @@ var tags = [];
 var encoded_uri = gup('uri');
 var unencoded_uri = decodeURIComponent(encoded_uri);
 var doctitle = decodeURIComponent(gup('doctitle'));
-var selected_text = decodeURIComponent(gup('selected_text'));
+var start = decodeURIComponent(gup('start'));
+var end = decodeURIComponent(gup('end'));
 var prefix = decodeURIComponent(gup('prefix'));
-document.querySelector('#selection').innerHTML = selected_text;
+var quote = decodeURIComponent(gup('quote'));
+document.querySelector('#selection').innerHTML = quote;
 document.querySelector('#page a').href = unencoded_uri;
 document.querySelector('#page a').text = doctitle;
 
@@ -58,8 +60,10 @@ function go() {
 			unencoded_uri, 
 			doctitle, 
 			user, 
-			selected_text, 
+			start,
+			end,
 			prefix, 
+			quote, 
 			tags
 			)
 	  };

@@ -18,9 +18,11 @@ function getSelectionPrefix(selection) {
 	return prefix;
 }
 
-
 var selected_text = getSelectionText();
 var prefix = getSelectionPrefix(selected_text);
+var selected_range = document.getSelection().getRangeAt(0);
+var position_selector = anchoring.TextPositionAnchor.fromRange(document.body, selected_range);
+var quote_selector = anchoring.TextQuoteAnchor.fromRange(document.body, selected_range);
 
 chrome.runtime.sendMessage(
 	{
@@ -28,8 +30,12 @@ chrome.runtime.sendMessage(
 		selected_text: selected_text,
 		prefix: prefix,
 		tab_url: tab_url,
-		doctitle: doctitle
+		doctitle: doctitle,
+		position_selector: position_selector,
+		quote_selector: quote_selector,
 	},
 	function(data) {
 		console.log(data);
 	});
+
+

@@ -17,18 +17,23 @@ function make_annotation_payload_with_only_tags(url, title, user, tags) {
         return JSON.stringify(payload);
 }
 
-function make_annotation_payload_from_selection(url, title, user, text, prefix, tags) {
+function make_annotation_payload_from_selection(url, title, user, start, end, prefix, quote, tags) {
         payload = {
 			"document": {
 				"title": title
 				},
 		   "target": [{
 			   "selector": [{
-						"exact": text,
-						"prefix": prefix,
-						"type": "TextQuoteSelector",
-						"suffix": ''
-					}]
+								"prefix": prefix,
+								"exact": quote,
+								"type": "TextQuoteSelector",
+								"suffix": ''
+								},
+							{
+								"start": start,
+								"end": end,
+								"type": "TextPositionSelector"
+							}]
             }],
             "uri": url,
             "tags": tags,

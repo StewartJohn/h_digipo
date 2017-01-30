@@ -31,18 +31,22 @@ chrome.runtime.onMessage.addListener(
 		callback(claims);
 		break;
 	  case 'receive_selection':
-		var selected_text = request.selected_text;
-		var prefix = request.prefix;
+		var start = request.position_selector.start;
+		var end = request.position_selector.end;
+		var prefix = request.quote_selector.prefix;
+		var quote = request.quote_selector.exact;
 		var tab_url = request.tab_url;
 		var doctitle = request.doctitle;
-		selection = [selected_text, prefix, tab_url, doctitle];
+		selection = [quote, prefix, tab_url, doctitle];
 		callback(selection);
 		var new_tab_url = 
-			chrome.extension.getURL('annotate.html') + 
-				'?uri=' + encodeURIComponent(tab_url) + 
-				'&doctitle=' + 	encodeURIComponent(doctitle) +
-				'&selected_text=' + encodeURIComponent(selected_text) +
-				'&prefix=' + encodeURIComponent(prefix)
+			chrome.extension.getURL('annotate.html')			+	 
+				'?uri='			+ encodeURIComponent(tab_url)	+ 
+				'&doctitle='	+ encodeURIComponent(doctitle)	+
+				'&prefix='		+ encodeURIComponent(prefix)	+
+				'&quote='		+ encodeURIComponent(quote)		+
+				'&start='		+ encodeURIComponent(start)		+
+				'&end='			+ encodeURIComponent(end)
 				;
 		chrome.tabs.create({ url: new_tab_url}, function(tab){
 			// nothing to do here?
@@ -67,9 +71,10 @@ chrome.contextMenus.create({
 				"var params = {tab_url:'TAB_URL',doctitle:'DOCTITLE'};"
 						.replace('TAB_URL',tab.url)
 						.replace('DOCTITLE',tab.title)
-						;
-			chrome.tabs.executeScript(tab.id, {code:params}, function() {
-				chrome.tabs.executeScript(tab.id, {file:'get_selection.js'});
+			chrome.tabs.executeScript(tab.id, {file:'anchoring.js'}, function() {						
+				chrome.tabs.executeScript(tab.id, {code:params}, function() {
+					chrome.tabs.executeScript(tab.id, {file:'get_selection.js'});
+				});
 			});
 		});
      }
@@ -450,4 +455,5 @@ function parse_annotation(row) {
         permissions: permissions
     }
 }
+
 
