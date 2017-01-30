@@ -1,6 +1,23 @@
 var tab_url = params.tab_url;
 var doctitle = params.doctitle;
 
+var selected_range = document.getSelection().getRangeAt(0);
+var position_selector = anchoring.TextPositionAnchor.fromRange(document.body, selected_range);
+var quote_selector = anchoring.TextQuoteAnchor.fromRange(document.body, selected_range);
+
+chrome.runtime.sendMessage(
+	{
+		action:'receive_selection',
+		tab_url: tab_url,
+		doctitle: doctitle,
+		position_selector: position_selector,
+		quote_selector: quote_selector,
+	},
+	function(data) {
+		console.log(data);
+	});
+
+/* use TextQuoteAnchor instead
 function getSelectionText() {
 	var selected_text = 'none';
     if (window.getSelection) {
@@ -17,25 +34,6 @@ function getSelectionPrefix(selection) {
 		prefix = base.substring(selection_starts_at - 30, selection_starts_at);
 	return prefix;
 }
-
-var selected_text = getSelectionText();
-var prefix = getSelectionPrefix(selected_text);
-var selected_range = document.getSelection().getRangeAt(0);
-var position_selector = anchoring.TextPositionAnchor.fromRange(document.body, selected_range);
-var quote_selector = anchoring.TextQuoteAnchor.fromRange(document.body, selected_range);
-
-chrome.runtime.sendMessage(
-	{
-		action:'receive_selection',
-		selected_text: selected_text,
-		prefix: prefix,
-		tab_url: tab_url,
-		doctitle: doctitle,
-		position_selector: position_selector,
-		quote_selector: quote_selector,
-	},
-	function(data) {
-		console.log(data);
-	});
+*/
 
 
