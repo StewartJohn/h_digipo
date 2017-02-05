@@ -5,6 +5,7 @@ var footnotes_links = [];
 var footnotes = {}
 var footnotes_count = 0;
 var footnotes_flag = false;
+var editing = location.href.indexOf('do=edit') != -1;
 
 var excludes = [
 	'digipo:analysis:start',
@@ -14,7 +15,7 @@ var excludes = [
 	'do=recent',
 	'do=revisions',
 	'do=backlink',
-	'do=edit',
+//	'do=edit',
 	'do=media',
 	'do=admin',
 	'do=profile'
@@ -71,11 +72,12 @@ function h_embed() {
 		  return;
 
   var id = location.href.match(/id=(.+$)/)[1]
-  id = id.replace(/(#.+$)/, '');
+  id = id.replace(/([#&].+$)/, '');
   if ( ! id.startsWith('digipo:analysis') )
 	  return;
-		   
-  embed_footnotes_container();
+
+  if (! editing )
+	  embed_footnotes_container();
 
   console.log(id);
 
@@ -105,10 +107,12 @@ function h_embed() {
 					}
 				})
 				.then(function(){
-					show_footnotes();
+					if ( ! editing )
+						show_footnotes();
 				})
 				.then(function(){
-					make_timeline();
+					if ( ! editing )
+						make_timeline();
 				})
 				.then(function(){
 					embed_viewer(id);
