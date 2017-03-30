@@ -17,16 +17,7 @@ document.querySelector('.page').appendChild(s);
 &lt;/script>
 </pre>
 
-##The CORS proxy
+## The CORS proxy
 
 The embed script relies on https://github.com/judell/h_cors for now, because Hypothesis doesn't support CORS at /api/annotations (but will eventually)
-
-## The Chrome extension
-
-Sources in the /ext directory. To distribute, cd to /ext and do this:
-
-zip -r ..\digipo.zip .
-
-Then upload the zip to the Chrome web store. The example lives here: https://chrome.google.com/webstore/detail/digipo/dllkpndfjcodlhlfiiogdedeipjphkgk. But you can sign up and publish your own variant.
-
 
