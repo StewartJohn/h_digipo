@@ -10,7 +10,7 @@ function assign_pubdate() {
 
 	var date = new Date (Date.parse(selection));
 	if ( date == 'Invalid Date' ) {
-		alert('Cannot interpret "' + selected_text + '" as a date');
+		alert('Cannot interpret "' + selection + '" as a date');
 	}
 
   var formatted_date = date.toISOString().substr(0,10);

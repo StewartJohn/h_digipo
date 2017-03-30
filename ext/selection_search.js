@@ -1,4 +1,4 @@
-var text = getSelectionText();
-var q = text + ' (site:www.sourcewatch.com OR site:www.factcheck.org OR site:hoax-slayer.com OR site:www.truthorfiction.com OR site:opensecrets.org OR site:www.politifact.com OR site:snopes.com OR site:www.washingtonpost.com/news/fact-checker/ OR site:digipo.io)' ;
-location.href = 'https://google.com/search?q=' + q;
+var text = document.getSelection().toString();
+var q = text + ' site:sourcewatch.com site:factcheck.org site:hoax-slayer.com site:truthorfiction.com site:opensecrets.org site:politifact.com site:snopes.com site:www.washingtonpost.com/news/fact-checker/ site:digipo.io' ;
+location.href = 'https://duckduckgo.com/?q=' + q;
 

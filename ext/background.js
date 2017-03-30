@@ -1,8 +1,11 @@
-var user = null;
-var token = null;
-var digipo_page = null;
-var selection = {}
-var current_tab = null;
+var host = 'http://digipo.io/doku.php?id=';
+var host_namespace = 'digipo:';
+var investigation_namespace = 'digipo:analysis';
+var control_namespace = 'control:investigations';
+
+var investigation_page_re = 'id=(' + investigation_namespace + ':[^\\"]+)\\"';
+var img = 'http://digipo.io/lib/exe/fetch.php?media=wiki:logo.png';
+var tags_from_host_url = host + control_namespace;
 
 chrome.storage.sync.get({
     user:'',
@@ -18,51 +21,67 @@ chrome.runtime.onMessage.addListener(
   function(request, sender, callback) {
 //alert('request.action: ' + request.action);
 	switch (request.action) {
-	  case 'get_digipo_tags':
-		var tags;
-		try { tags = get_digipo_tags(); }
-		catch (e) { alert(e); }
-		callback(tags);
+
+	  case 'wayback':
+		  post_to_wayback(request.url);
 		break;
-	  case 'get_digipo_claims':
-		var claims;
-		try { claims = get_digipo_claims(request.url); }
-		catch (e) { alert(e); }
-		callback(claims);
+
+	  case 'get_tags_from_host':
+		var tags_from_host = get_tags_from_host(tags_from_host_url);
+		callback(tags_from_host);
 		break;
+
 	  case 'receive_selection':
 		var start = request.position_selector.start;
 		var end = request.position_selector.end;
 		var prefix = request.quote_selector.prefix;
 		var quote = request.quote_selector.exact;
 		var tab_url = request.tab_url;
-		var doctitle = request.doctitle;
+		var doctitle = safe_doc_title(request.doctitle);
 		selection = [quote, prefix, tab_url, doctitle];
 		callback(selection);
 		var new_tab_url = 
-			chrome.extension.getURL('annotate.html')			+	 
+			chrome.extension.getURL('selection_to_related.html')+	 
 				'?uri='			+ encodeURIComponent(tab_url)	+ 
 				'&doctitle='	+ encodeURIComponent(doctitle)	+
 				'&prefix='		+ encodeURIComponent(prefix)	+
 				'&quote='		+ encodeURIComponent(quote)		+
 				'&start='		+ encodeURIComponent(start)		+
-				'&end='			+ encodeURIComponent(end)
+				'&end='			+ encodeURIComponent(end)       +
+				'&host='		+ encodeURIComponent(host)		+
+				'&img='			+ encodeURIComponent(img)       
 				;
 		chrome.tabs.create({ url: new_tab_url}, function(tab){
-			// nothing to do here?
 		});
-
-		
 		break;
+
+	  case 'receive_pubdate':
+		var formatted_date = request.formatted_date
+		var tab_url = request.tab_url;
+		var doctitle = safe_doc_title(request.doctitle);
+		callback(formatted_date);
+		var new_tab_url = 
+			chrome.extension.getURL('date_to_timeline.html')		+	 
+				'?uri='			+ encodeURIComponent(tab_url)		+ 
+				'&doctitle='	+ encodeURIComponent(doctitle)		+
+				'&date='		+ encodeURIComponent(formatted_date) +
+				'&host='		+ encodeURIComponent(host)			+
+				'&img='			+ encodeURIComponent(img)
+				;
+		chrome.tabs.create({ url: new_tab_url}, function(tab){
+		});
+		break;
+
 	  default:
 		alert('unknown action', request.action);
 	}
-  });
+});
+
 
 // selection
 
 chrome.contextMenus.create({
-	title: "Tag this Selection", 
+	title: "Add this Selection to Related Annotations", 
 	contexts:["selection"],
 	onclick: function() {
 		chrome.tabs.query({active:true}, function(tabs) {
@@ -70,7 +89,7 @@ chrome.contextMenus.create({
 			var params =
 				"var params = {tab_url:'TAB_URL',doctitle:'DOCTITLE'};"
 						.replace('TAB_URL',tab.url)
-						.replace('DOCTITLE',tab.title)
+						.replace('DOCTITLE',safe_doc_title(tab.title))
 			chrome.tabs.executeScript(tab.id, {file:'anchoring.js'}, function() {						
 				chrome.tabs.executeScript(tab.id, {code:params}, function() {
 					chrome.tabs.executeScript(tab.id, {file:'get_selection.js'});
@@ -80,30 +99,28 @@ chrome.contextMenus.create({
      }
  });
 
-
 chrome.contextMenus.create({
-	title: "Assign Publication Date", 
+	title: "Add Selected Date to Timeline", 
 	contexts:["selection"],
 	onclick: function(info) {
 		chrome.tabs.query({active:true}, function(tabs) {
 			var tab = tabs[0];
-			var url = tab.url;
+			var tab_url = tab.url;
 			chrome.tabs.executeScript(tab.id, {file:'lib.js'}, function() {
 				var params =
-					"var params = {user:'USER',token:'TOKEN',url:'URL',doctitle:'DOCTITLE',selection:'SELECTION'};"
-						.replace('USER',user)
-						.replace('TOKEN',token)
-						.replace('URL',url)
-						.replace('DOCTITLE',tab.title)
+					"var params = {tab_url:'TAB_URL',doctitle:'DOCTITLE',selection:'SELECTION'};"
+						.replace('TAB_URL',tab_url)
+						.replace('DOCTITLE', safe_doc_title(tab.title))
 						.replace('SELECTION', info.selectionText)
 						;
 				chrome.tabs.executeScript(tab.id, {code:params}, function() {
-					chrome.tabs.executeScript(tab.id, {file: "assign_pubdate.js"});
+					chrome.tabs.executeScript(tab.id, {file: "get_pubdate.js"});
 				});
 			});				
 		});
 	 }
 });
+
 
 chrome.contextMenus.create({
 	title: "Search Debunking Sites for this Selection", 
@@ -111,12 +128,7 @@ chrome.contextMenus.create({
 	onclick: function() {
 		chrome.tabs.query({active:true}, function(tabs) {
 			var tab = tabs[0];
-			chrome.tabs.executeScript(tab.id, {file:'get_selection.js'}, function() {
-				chrome.tabs.executeScript(tab.id, {file:'lib.js'}, function() {
-					chrome.tabs.executeScript(tab.id, {file: "selection_search.js"});
-				});				
-			});				
-			
+			chrome.tabs.executeScript(tab.id, {file: "selection_search.js"});
 		});
 	 }
 });
@@ -167,30 +179,75 @@ chrome.contextMenus.create({
 	onclick: function() {
 		chrome.tabs.query({active:true}, function(tabs) {
 			var tab = tabs[0];
-			var a = document.createElement('a');
-			a.href=tab.url;
-			chrome.tabs.update(tab.id,
-				{url:'https://www.google.com/search?q=' + a.hostname + ' -site:' + a.hostname});
-		});
+			chrome.tabs.executeScript(tab.id, {file:'parse_domain.js'}, function() {
+				var parsed_domain = parse_domain.parse_domain(tab.url);
+				var domain = parsed_domain.domain;
+				var tld = parsed_domain.tld;
+				var site = domain + '.' + tld;
+				chrome.tabs.update(tab.id,
+					{url:'https://www.google.com/search?q=' + site + ' -site:' + site });
+			});
+		});				
 	}
 });
 
-
-
-
 chrome.contextMenus.create({
-	title: "Tag this Page", 
+	title: "Add this Page to Related Annotations", 
 	contexts:["page"],
 	onclick: function() {
 		chrome.tabs.query({active:true}, function(tabs) {
 			var tab = tabs[0];
-			var new_tab_url = chrome.extension.getURL('tagpage.html') + '?uri=' + encodeURIComponent(tab.url) + '&doctitle=' + encodeURIComponent(tab.title);
+			var new_tab_url = chrome.extension.getURL('page_to_related.html')	+ 
+							'?uri=' + encodeURIComponent(tab.url)				+ 
+							'&doctitle=' + encodeURIComponent(tab.title)		+
+							'&host=' + host										+
+							'&img=' + img
+							;
 			chrome.tabs.create({ url: new_tab_url}, function(tab){
 				// nothing to do here?
 			});
 		});
 	}
 });
+
+
+chrome.contextMenus.create({
+	title: "Add this Page to Timeline", 
+	contexts:["page"],
+	onclick: function(info) {
+		chrome.tabs.query({active:true}, function(tabs) {
+			var tab = tabs[0];
+			var tab_url = tab.url;
+			chrome.tabs.executeScript(tab.id, {file:'lib.js'}, function() {
+				var params =
+					"var params = {tab_url:'TAB_URL',doctitle:'DOCTITLE',selection:'SELECTION'};"
+						.replace('TAB_URL',tab_url)
+						.replace('DOCTITLE', safe_doc_title(tab.title))
+						.replace('SELECTION', info.selectionText)
+						;
+				chrome.tabs.executeScript(tab.id, {code:params}, function() {
+					chrome.tabs.executeScript(tab.id, {file: "get_pubdate.js"});
+				});
+			});				
+		});
+	 }
+});
+
+chrome.contextMenus.create({
+	title: "Convert PDF to HTML (then Add Selection to Related Annotations)", 
+	documentUrlPatterns: ["chrome-extension://*/index.html"],
+	contexts:["page"],
+	onclick: function() {
+		chrome.tabs.query({active:true}, function(tabs) {
+			var tab = tabs[0];
+			var new_tab_url = chrome.extension.getURL('/web/viewer.html') + '?file=' +  encodeURIComponent(tab.url);
+			chrome.tabs.update({ url: new_tab_url}, function(tab){
+				 // nothing to do here
+			});
+		});
+	}
+});
+
 
 chrome.contextMenus.create({
 	title: "Find Publication Date", 
@@ -224,29 +281,6 @@ chrome.contextMenus.create({
 	}
 });
 
-/*
-chrome.contextMenus.create({
-	title: "Summarize Quotes", 
-	contexts:["page"],
-	onclick: function() {
-		chrome.tabs.query({active:true}, function(tabs) {
-			var tab = tabs[0];
-			chrome.tabs.executeScript(tab.id, {file:'lib.js'}, function() {
-				var lib = heredoc(lib_for_heredoc);
-				var params =
-					"var params = {user:'USER',token:'TOKEN',url:'URL',lib:'LIB'};"
-						.replace('USER',user)
-						.replace('TOKEN',token)
-						.replace('URL',tab.url)
-						.replace('LIB',btoa(lib));
-				chrome.tabs.executeScript(tab.id, {code:params}, function() {
-					chrome.tabs.executeScript(tab.id, {file: "summarize_quotes.js"});
-				});
-			});				
-		});
-	 }
-});
-*/
 
 chrome.contextMenus.create({
 	title: "Save Facebook Share Count", 
@@ -290,13 +324,10 @@ function sync_xhr_annotation(id) {
   return JSON.parse(xhr.responseText);
 }
 
-
-function get_digipo_tags() {
-
-  var data = sync_xhr_text('http://digipo.io/doku.php?id=digipo:analysis:latest_news_analysis');
-
-  var re = new RegExp(/a href=\"\/doku.php\?id=digipo:analysis:([^\"\?\&]+)/g);
+function get_tags_from_host(url) {
+  var data = sync_xhr_text(url);
   var tags = [];
+  var re = new RegExp(investigation_page_re, 'g');
   var tag = re.exec(data);
   while (tag != null) {
 	  tags.push(tag[1]);
@@ -307,153 +338,29 @@ function get_digipo_tags() {
 	  if ( x != 'latest_news_analysis' &&
 		   x != 'start' &&
 		   x != 'source_shortname' &&
+		   x != 'source_shortname' &&
 		   x != 'open_claims'
 		  ) 
 		  return x;
 	  });
 
   tags = unique(tags).sort();
-
+  
   return tags;
-
-}
-
-function get_digipo_claims(url) {
-
-	var rows = sync_xhr_rows('https://hypothes.is/api/search?limit=200&uri=' +
-				   encodeURIComponent(url)	);
-
-	var html = '';
-
-	for ( var i=0; i<rows.length; i++ ) {
-
-		var row = parse_annotation(rows[i]);
-
-		if ( row.quote == '' )
-			continue;
-
-		var html = process_row(row, html);
-	}
-
-	return html;
-}
-
-function process_row(row, html) {
-	var lines = row.text.split('\n');
-
-	for (var j=0; j<lines.length; j++ ) {
-		html = process_line(row, lines[j], html);
-	}
-
-	return html;
-}
-
-function process_line(row, line, html) {
-			html += '<div id"' + row.id + '">';
-
-			var direct_link = line.match(/https:\/\/hyp.is\/([^\/]+)/);
-
-			if ( line.match(/http/) != null ) {
-				line = line.replace(/\((http[^\)]+)\)/, '<a href="$1">$1</a>');
-			}
-
-			if ( line.startsWith('#') ) {
-				line = line.replace(/^#+/, '');
-
-				html += '<h3>Claim: '
-						+ line
-						+ '</h3>'
-						+ '<p><b>Quoted in this page</b>: '
-						+ '<i>'
-						+ row.quote
-						+ '</i> '
-						+ '<a style="font-size:smaller" color:black" target="_blank" href="https://hyp.is/' + row.id
-						+ '">'
-						+ 'link'
-						+ '</a>'
-						+ '</p>'
-						;
-			}
-			else {
-				html += '<p>' + line + '</p>';
-			}
-
-			if (direct_link) {
-				var id = direct_link[1];
-				var url = 'https://hypothes.is/api/annotations/' + id;
-				var row = parse_annotation(sync_xhr_annotation(id));
-				html += '<div style="margin-top:20px;margin-left:40px" class="direct_link">'
-						+ '<p><b>Quoted in the linked page</b>: '
-						+ '<i>'
-						+ row.quote
-						+ '</i> '
-						+ '<a style="font-size:smaller" color:black" target="_blank" href="https://hyp.is/' + row.id
-						+ '">'
-						+ 'link'
-						+ '</a>'
-						+ '</p>'
-						+ '</div>';
-			}
-
-			html += '</div>';
-			return html;
-}
-
-function heredoc(fn) {
- var a = fn.toString();
- var b = a.slice(14, -3);
- return b;
 }
 
 
-function parse_annotation(row) {
-    var id = row.id;
-    var url = row.uri;
-    var updated = row.updated.slice(0, 19);
-    var group = row.group;
-    var title = url;
-    var refs = row.hasOwnProperty('references') ? row['references'] : [];
-    var user = row.user.replace('acct:', '').replace('@hypothes.is', '');
-    var quote = '';
-    if ( // sigh...
-            row.hasOwnProperty('target') &&
-            row.target.length
-            ) {
-        var selectors = row.target[0]['selector'];
-        if (selectors) {
-            for (var i = 0; i < selectors.length; i++) {
-                selector = selectors[i];
-                if (selector.type == 'TextQuoteSelector')
-                    quote = selector.exact;
-            }
-        }
-    }
-    var text = row.hasOwnProperty('text') ? row.text : '';
-    var tags = [];
-    try {
-        title = row.document.title;
-        if ( typeof(title) == 'object' )
-            title = title[0];
-        refs[id] = refs;
-        tags = row.tags;
-    }
-    catch (e) {
-        console.log(e);
-    }
-    var permissions = row.permissions;
-    return {
-        id: id,
-        url: url,
-        updated: updated,
-        title: title,
-        refs: refs,
-        user: user,
-        text: text,
-        quote: quote,
-        tags: tags,
-        group: group,
-        permissions: permissions
-    }
+function post_to_wayback(url) {
+
+	var options = {
+		method: 'GET',
+		url: 'https://web.archive.org/save/' + url
+		};
+
+	makeRequest(options)
+		.then( function(data) {});
 }
 
-
+function safe_doc_title(title) {
+	return title.split("'").join('\\\'');
+}

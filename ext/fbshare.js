@@ -29,7 +29,13 @@ function create(user, token, url) {
 				url: 'https://h.jonudell.info/create?token=' + token + '&url=' + url,
 				params: null,
 				headers: {"Content-type":"application/json" },
-				params: make_annotation_payload_with_only_tags(url, doctitle, user, ['fbshare:' + sharecount])
+				params: make_annotation_payload_with_only_tags(
+					url, 
+					doctitle, 
+					user, 
+					['fbshare:' + sharecount],
+					'__world__'
+					)
 		  };
 		  makeRequest(options)
 		   .then(function(data) {

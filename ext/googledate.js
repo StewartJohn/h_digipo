@@ -19,15 +19,19 @@ function googledate() {
 	url: 'https://h.jonudell.info/create?token=' + token + '&url=' + target_url,
 	params: null,
 	headers: {"Content-type":"application/json" },
-	params: make_annotation_payload_with_only_tags(target_url, doctitle, user, ['googledate:' + formatted_date])
+	params: make_annotation_payload_with_only_tags(
+		target_url, 
+		doctitle, 
+		user, 
+		['googledate:' + formatted_date],
+		'__world__')
   };
 
   makeRequest(options)
    .then(function (data) {
 	var row = JSON.parse(data);
-	var id = row.id;
-	location.href = 'https://hyp.is/' + id;
-	})
+	window.close()
+  })
    .catch(function (err) {
 	  console.error('googledate: there was an error!', err);
    });

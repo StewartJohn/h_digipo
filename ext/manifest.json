@@ -1,20 +1,24 @@
 {
- "background": {"scripts": ["background.js", "lib.js"]},
+ "background": {"scripts": ["background.js", "lib.js", "googledate.js", "parse_domain.js"]},
  "browser_action": {
  "default_icon": "icon-128.png",
- "default_title": "Digipo"
+ "default_title": "DigiPo"
  },
 "options_ui": {
     "page": "options.html",
     "chrome_style": true
   },
 "name": "Digipo",
-"description": "Digipo tools",
+"description": "Tool support for the DigiPo fact-checking course",
 "homepage_url": "http://digipo.io",
 "icons": {
      "16": "icon-16.png",
      "48": "icon-48.png",
      "128": "icon-128.png" },
+"web_accessible_resources": [
+    "/web/viewer.html"
+  ],
+
 "permissions": [
      "http://*/*",
      "https://*/*",
@@ -23,6 +27,6 @@
      "tabs",
 	 "storage"
  ],
-"version": "0.56",
+"version": "1.0",
 "manifest_version": 2
 }
