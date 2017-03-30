@@ -238,8 +238,14 @@ function make_footnotes_promises(footnotes_links) {
 		    var row = parse_annotation(JSON.parse(data));
 //			console.log(row.id);
 			url = row.url
-			var dl = 'https://hyp.is/' + row.id + '/' + url.replace('https://','').replace('http://','');
-			footnotes[dl] = { id: row.id, quote: row.quote, url: row.url, dl:dl };
+			var dl = 'https://hyp.is/' + row.id;
+			footnotes[dl] = {
+				id: row.id,
+				quote: row.quote,
+				url: row.url,
+				title: row.title,
+				dl:	dl
+				};
 			footnotes_count += 1;
 			})
 	   );
@@ -261,6 +267,7 @@ function embed_viewer(id) {
 		  var obj = JSON.parse(data);
 		  var related_header = document.createElement('h2');
 		  related_header.setAttribute('id', 'related_header');
+		  related_header.style['margin-top'] = '20px';
 		  related_header.innerHTML = 'Related Annotations' +
 				toggle_control('related_header', 'related_container');
 		  document.querySelector('.page').appendChild(related_header);
@@ -393,16 +400,20 @@ function gather_footnotes() {
 	var dls = document.querySelectorAll('a[href^="https://hyp.is"]');
 	for (i=0; i<dls.length; i++) {
 		var dl = dls[i];
-		footnotes_links.push(dl.href);
+//		footnotes_links.push(dl.href);
+		var url = 'https://' + dl.href.match(/(hyp.is\/[^\/]+)/)[1];		
 		var id = dl.href.match(/hyp.is\/([^\/]+)/)[1];		
+		footnotes_links.push(url);
 		var num = i+1;
-		dl.outerHTML += '<sup>(<a href="#fn_' + id + '">' + num + '</a>)</sup>';
+//		dl.outerHTML += '<sup>(<a href="#fn_' + id + '">' + num + '</a>)</sup>';
+		dl.outerHTML += '<a name="_fn_' + id + '"></a> <sup>(<a title="visit footnote" href="#fn_' + id + '">' + num + '</a>)</sup>';
 	}
 	return footnotes_links;
 }
 
 function make_footnote(obj) {
-	var url = obj.url.replace('https://','').replace('http://','');
+	var url = obj.dl;
+	var title = obj.title;
 	var num = footnotes_links.indexOf(obj.dl);
 	num += 1;
 	var div = document.createElement('div');
@@ -410,8 +421,12 @@ function make_footnote(obj) {
 	div.innerHTML = '<a name="fn_' + obj.id + '">'
 				+ '<p class="footnote" style="font-size:smaller">'
 				+ num
-				+ ' '
+				+ ' <a href="'
 				+ url
+				+ '">' 
+				+ obj.title
+				+ '</a>'
+				+ ' <a title="see in context" href="#_fn_' + obj.id + '">&#9166</a>'
 				+ '\n</p>'
 				+ '<blockquote style="font-family:italic">'
 				+ obj.quote
