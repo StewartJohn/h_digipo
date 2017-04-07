@@ -328,9 +328,6 @@ function _go(user, token) {
 			return (data);
 		}) 
 	   .then(function(data) {
-		var host_id = host_tag_picker.options[host_tag_picker.selectedIndex].value;
-//			location.href = 'https://hyp.is/' + data.id;
-//
 		chrome.tabs.getCurrent(function(tab) {
 			chrome.tabs.remove(tab.id, function() { });
 			});
@@ -375,6 +372,7 @@ img { margin-bottom:40px }
 .host { display:none}
 </style>
 */}
+
 
 function add_listeners() {
 document.addEventListener('DOMContentLoaded', function () {
