@@ -60,6 +60,10 @@ function get_date(tags) {
 
 function h_embed() {
 
+  if ( location.href.indexOf('gdoc_test') != -1 ) {
+		show_classy_editor();
+	}
+
   footnotes_links = gather_footnotes();
 
   for (var i=0; i<footnotes_links.length; i++) {
@@ -109,9 +113,6 @@ function h_embed() {
 				.then(function(){
 					if ( ! editing )
 						show_footnotes();
-				})
-				.then(function(){
-					if ( ! editing )
 						make_timeline();
 				})
 				.then(function(){
@@ -163,7 +164,8 @@ function make_timeline() {
 
 		   if ( dates.length == 0 ) {
 			   var timeline_help = document.createElement('p');
-			   timeline_help.innerHTML = '<p>No annotations related to this investigation have been tagged with dates. <p>Please use the <a target="_blank" href="https://chrome.google.com/webstore/detail/digipo/dllkpndfjcodlhlfiiogdedeipjphkgk">Digipo Chrome Extension</a>\'s <i>Assign Publication Date</i> helper to organize key documents here in chronological order.';
+			   timeline_help.style['font-size'] = 'smaller';
+			   timeline_help.innerHTML = '<p>No annotations related to this investigation have been tagged with dates. <p>Please use the <a target="_blank" href="https://chrome.google.com/webstore/detail/digipo/dllkpndfjcodlhlfiiogdedeipjphkgk">Digipo Chrome Extension</a>\'s <i>Assign Publication Date</i> helper to organize key documents here in (reverse) chronological order.';
 
 			   timeline_container.appendChild(timeline_help);				   										
 		   }
@@ -277,8 +279,8 @@ function embed_viewer(id) {
 		  document.querySelector('.page').appendChild(related_container);
 
 		  var help = document.createElement('p');
+		  help.style['font-size'] = 'smaller';	
 		  if (obj.total>0) {
-			  help = document.createElement('p');
 			  help.innerHTML = 'Here are annotations for the Hypothesis tag <a href="https://hypothes.is/search?q=tag:' + id + '">' + id + '</a>';
 			  related_container.appendChild(help);
 			  var iframe = document.createElement('iframe');
@@ -289,7 +291,7 @@ function embed_viewer(id) {
 			  related_container.appendChild(iframe);
 			  }
 		  else {
-			  help.innerHTML = '<p>There are no annotations yet for the Hypothesis tag <b><i>' + id + '</i></b>. <p>Please use the <a target="_blank" href="https://chrome.google.com/webstore/detail/digipo/dllkpndfjcodlhlfiiogdedeipjphkgk">Digipo Chrome Extension</a>\'s <i>Tag this Selection</i> or <i>Tag this Page</i> helpers to gather annotations related to this investigation.'
+			  help.innerHTML = '<p>There are no annotations yet for the Hypothesis tag <b><i>' + id + '</i></b>. <p>Please use the <a target="_blank" href="https://chrome.google.com/webstore/detail/digipo/dllkpndfjcodlhlfiiogdedeipjphkgk">Digipo Chrome Extension</a>\'s <i>Add this Page to Related Annotations</i> or <i>Add this Selection to Related Annotations</i> helpers to gather annotations related to this investigation.'
 				  related_container.appendChild(help);
 			  }
 
@@ -440,11 +442,48 @@ function embed_footnotes_container() {
 //	console.log('embed_footnotes_container');
 	var footnotes_header = document.createElement('h2');
 	footnotes_header.innerHTML = 'Footnotes'
+
 	document.querySelector('.page').appendChild(footnotes_header);
+
+	var help_element = document.createElement('p');
+	document.querySelector('.page').appendChild(help_element);
+
+	var help_doc = function(){/*
+Footnotes appear here when you use Hypothesis <a href="https://hypothes.is/blog/direct-linking/">direct links</a> in the article. A direct link refers to a Hypothesis annotation which you can create by using the <a target="_blank" href="https://chrome.google.com/webstore/detail/digipo/dllkpndfjcodlhlfiiogdedeipjphkgk">Digipo Chrome Extension</a> or by using <a target="_blank" href="https://hypothes.is">Hypothesis</a> directly. 
+Here's a <a target="_blank" href="http://jonudell.net/h/digipo_footnote_explainer_01.mp4">screencast</a> showing how.
+*/}
+	help_element.innerHTML = heredoc(help_doc);
+	help_element.style['font-size'] = 'smaller';
+
 	var footnotes_container = document.createElement('div');
 	footnotes_container.id = 'footnotes_container';
+
+
 	document.querySelector('.page').appendChild(footnotes_container);
 }
+
+/*
+function show_classy_editor() {
+	var classy_editor = document.createElement('iframe');
+	classy_editor.style.width = "100%";
+	classy_editor.style.height = "800px";
+	classy_editor.src = "https://docs.google.com/document/d/18Aw7WFICCNUyDiKnb2h2sX4L9sAaul0PJcUhmoqAqk4/edit";
+	document.querySelector('.page').appendChild(classy_editor);
+}
+*/
+
+function show_classy_editor() {
+	var classy_editor = document.createElement('div');
+	classy_editor.style.width = "100%";
+//	classy_editor.innerHTML = '<p class="c3"><span class="c2">Now that&rsquo;s <a href="https://hyp.is/FBMiuhsqEeexhwPTWGUXMA">interesting!!</a></span><p class="c0"><span class="c2"></span></p><p class="c3"><span"><img src="http://jonudell.net/h/image00.png"></span></p>';
+//	classy_editor.innerHTML = '<p class="c0"><span>Now that&rsquo;s </span><span class="c2"><a href="https://hyp.is/FBMiuhsqEeexhwPTWGUXMA">interesting!</a></span></p><p class="c0 c3"><span class="c1"></span></p><p class="c0"><span style="overflow: hidden; display: inline-block; margin: 0.00px 0.00px; border: 0.00px solid #000000; transform: rotate(0.00rad) translateZ(0px); -webkit-transform: rotate(0.00rad) translateZ(0px); width: 452.31px; height: 396.50px;"><img alt="" src="http://jonudell.net/h/image00.png" style="width: 452.31px; height: 396.50px; margin-left: 0.00px; margin-top: 0.00px; transform: rotate(0.00rad) translateZ(0px); -webkit-transform: rotate(0.00rad) translateZ(0px);" title=""></span></p><p class="c0 c3"><span class="c1"></span></p><p class="c0 c3"><span class="c1"></span></p><p class="c0 c3"><span class="c1"></span></p><p class="c0 c3"><span class="c1"></span></p>';
+	classy_editor.innerHTML ='<p class="c1"><span>Now that&rsquo;s </span><span class="c3"><a class="c5" href="https://hyp.is/FBMiuhsqEeexhwPTWGUXMA">interesting!</a></span></p><p class="c1 c2"><span class="c0"></span></p><p class="c1"><span style="overflow: hidden; display: inline-block; margin: 0.00px 0.00px; border: 0.00px solid #000000; transform: rotate(0.00rad) translateZ(0px); -webkit-transform: rotate(0.00rad) translateZ(0px); width: 452.31px; height: 396.50px;"><img alt="" src="https://lh6.googleusercontent.com/keU6e3PHUXBISu90tKBYbzu8wpNkTZlDqkgqm21ZNhF0LIcupIrbSK7n_Cr2xJaqMEa-Q_exKm9P7AC9q7yks5IY1UbrIA3UNsfRbgnmOcEbHo8Nj7cFML0RaHYhJs8FtphQq08P" style="width: 452.31px; height: 396.50px; margin-left: 0.00px; margin-top: 0.00px; transform: rotate(0.00rad) translateZ(0px); -webkit-transform: rotate(0.00rad) translateZ(0px);" title=""></span></p><p class="c1 c2"><span class="c0"></span></p><p class="c1 c2"><span class="c0"></span></p><p class="c1 c2"><span class="c0"></span></p><p class="c1 c2"><span class="c0"></span></p>';
+
+	document.querySelector('.page').appendChild(classy_editor);
+}
+
+
+
 
 function show_footnotes() {
     var dls = footnotes_links;
@@ -460,7 +499,7 @@ function check_footnotes() {
 		window.setTimeout(check_footnotes, 500);
 	}
 	else {
-		show_footnotes();
+	show_footnotes();
 	}
 }
 
@@ -509,7 +548,11 @@ function toggle_control(header_id, container_id) {
 				;
 }
 
-
+function heredoc(fn) {
+ var a = fn.toString();
+ var b = a.slice(14, -3);
+ return b;
+}
 
 
 
