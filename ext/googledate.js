@@ -1,10 +1,19 @@
-var user = params.user;
-var token = params.token;
-var doctitle = params.doctitle;
+if (params) {
+	var user = params.user;
+	var token = params.token;
+	var doctitle = params.doctitle;
+}
+else {
+	var params = {};
+}
 
 function googledate() {
 
-  var dom_date = document.querySelector('span.f').innerText;
+  var dom_date = document.querySelector('span.f');
+  if (! dom_date )
+	return;
+  else 
+    dom_date = dom_date.innerText;
   dom_date = dom_date.replace(' - ','')
   var js_date = new Date(Date.parse(dom_date));
   var formatted_date =  js_date.toISOString().substr(0,10)
