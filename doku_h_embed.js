@@ -6,6 +6,7 @@ var footnotes = {}
 var footnotes_count = 0;
 var footnotes_flag = false;
 var editing = location.href.indexOf('do=edit') != -1;
+var gdoc_html = '';
 
 var excludes = [
 	'digipo:analysis:start',
@@ -60,17 +61,6 @@ function get_date(tags) {
 
 function h_embed() {
 
-  if ( location.href.indexOf('gdoc_test') != -1 ) {
-		show_classy_editor();
-	}
-
-  footnotes_links = gather_footnotes();
-
-  for (var i=0; i<footnotes_links.length; i++) {
-	  var url = footnotes_links[i];
-//      console.log(url);						
-  }
-
   for ( var i=0; i<excludes.length; i++)
 	  if ( location.href.indexOf(excludes[i]) != -1 )
 		  return;
@@ -80,23 +70,43 @@ function h_embed() {
   if ( ! id.startsWith('digipo:analysis') )
 	  return;
 
+  install_classy_editor();	
+
+  if ( location.href.indexOf('gdoc_test') != -1 ) {
+  		  var options2 = {
+			  method: 'GET',
+			  url: 'https://docs.google.com/document/d/18Aw7WFICCNUyDiKnb2h2sX4L9sAaul0PJcUhmoqAqk4/export?format=html'
+			};
+		  makeRequest(options2)
+		  .then(function(data) {
+  			gdoc_html = data;
+			gdoc_html = gdoc_html.replace(/^<html>.+<\/head><body[^>]+>/, '');
+			gdoc_html = gdoc_html.replace(/<\/body><\/html>/,'');
+			gdoc_html = gdoc_html.replace(/https:\/\/www.google.com\/url\?q=https:\/\/hyp.is/,'https://hyp.is');			
+			gdoc_html = gdoc_html.replace(/(hyp.is[^&]+)(&[^"]+)/, '$1');
+			return gdoc_html;
+		  })
+		  .then(function(gdoc_html)  {
+		  	console.log(gdoc_html)
+		  }); 
+	}
+
+  footnotes_links = gather_footnotes();
+
   if (! editing )
 	  embed_footnotes_container();
 
-  console.log(id);
+	  console.log(id);
 
 	  var options = {
 		  method: 'GET',
 		  url: 'https://hypothes.is/api/search?limit=200&tag=' + id
 		};
 
-//	  console.log('makeRequest', options.url);
-
 	  makeRequest(options)
 	  .then(function (data) {
 		  var tag_search_promises = make_tag_search_promises(data);
 		  return tag_search_promises;
-
 	  })
 	  .then(function (tag_search_promises) {
 		  Promise.all(tag_search_promises)
@@ -110,9 +120,13 @@ function h_embed() {
 						make_footnote(obj);
 					}
 				})
+				.then (function(){
+//	
+				})
 				.then(function(){
 					if ( ! editing )
-						show_footnotes();
+//						show_footnotes();
+						setTimeout(show_footnotes,500);
 						make_timeline();
 				})
 				.then(function(){
@@ -452,38 +466,26 @@ function embed_footnotes_container() {
 Footnotes appear here when you use Hypothesis <a href="https://hypothes.is/blog/direct-linking/">direct links</a> in the article. A direct link refers to a Hypothesis annotation which you can create by using the <a target="_blank" href="https://chrome.google.com/webstore/detail/digipo/dllkpndfjcodlhlfiiogdedeipjphkgk">Digipo Chrome Extension</a> or by using <a target="_blank" href="https://hypothes.is">Hypothesis</a> directly. 
 Here's a <a target="_blank" href="http://jonudell.net/h/digipo_footnote_explainer_01.mp4">screencast</a> showing how.
 */}
+
 	help_element.innerHTML = heredoc(help_doc);
 	help_element.style['font-size'] = 'smaller';
 
 	var footnotes_container = document.createElement('div');
 	footnotes_container.id = 'footnotes_container';
 
-
 	document.querySelector('.page').appendChild(footnotes_container);
 }
 
-/*
 function show_classy_editor() {
-	var classy_editor = document.createElement('iframe');
-	classy_editor.style.width = "100%";
-	classy_editor.style.height = "800px";
-	classy_editor.src = "https://docs.google.com/document/d/18Aw7WFICCNUyDiKnb2h2sX4L9sAaul0PJcUhmoqAqk4/edit";
-	document.querySelector('.page').appendChild(classy_editor);
+	document.getElementById("classy_editor").innerHTML = gdoc_html;
 }
-*/
 
-function show_classy_editor() {
+function install_classy_editor() {
 	var classy_editor = document.createElement('div');
 	classy_editor.style.width = "100%";
-//	classy_editor.innerHTML = '<p class="c3"><span class="c2">Now that&rsquo;s <a href="https://hyp.is/FBMiuhsqEeexhwPTWGUXMA">interesting!!</a></span><p class="c0"><span class="c2"></span></p><p class="c3"><span"><img src="http://jonudell.net/h/image00.png"></span></p>';
-//	classy_editor.innerHTML = '<p class="c0"><span>Now that&rsquo;s </span><span class="c2"><a href="https://hyp.is/FBMiuhsqEeexhwPTWGUXMA">interesting!</a></span></p><p class="c0 c3"><span class="c1"></span></p><p class="c0"><span style="overflow: hidden; display: inline-block; margin: 0.00px 0.00px; border: 0.00px solid #000000; transform: rotate(0.00rad) translateZ(0px); -webkit-transform: rotate(0.00rad) translateZ(0px); width: 452.31px; height: 396.50px;"><img alt="" src="http://jonudell.net/h/image00.png" style="width: 452.31px; height: 396.50px; margin-left: 0.00px; margin-top: 0.00px; transform: rotate(0.00rad) translateZ(0px); -webkit-transform: rotate(0.00rad) translateZ(0px);" title=""></span></p><p class="c0 c3"><span class="c1"></span></p><p class="c0 c3"><span class="c1"></span></p><p class="c0 c3"><span class="c1"></span></p><p class="c0 c3"><span class="c1"></span></p>';
-	classy_editor.innerHTML ='<p class="c1"><span>Now that&rsquo;s </span><span class="c3"><a class="c5" href="https://hyp.is/FBMiuhsqEeexhwPTWGUXMA">interesting!</a></span></p><p class="c1 c2"><span class="c0"></span></p><p class="c1"><span style="overflow: hidden; display: inline-block; margin: 0.00px 0.00px; border: 0.00px solid #000000; transform: rotate(0.00rad) translateZ(0px); -webkit-transform: rotate(0.00rad) translateZ(0px); width: 452.31px; height: 396.50px;"><img alt="" src="https://lh6.googleusercontent.com/keU6e3PHUXBISu90tKBYbzu8wpNkTZlDqkgqm21ZNhF0LIcupIrbSK7n_Cr2xJaqMEa-Q_exKm9P7AC9q7yks5IY1UbrIA3UNsfRbgnmOcEbHo8Nj7cFML0RaHYhJs8FtphQq08P" style="width: 452.31px; height: 396.50px; margin-left: 0.00px; margin-top: 0.00px; transform: rotate(0.00rad) translateZ(0px); -webkit-transform: rotate(0.00rad) translateZ(0px);" title=""></span></p><p class="c1 c2"><span class="c0"></span></p><p class="c1 c2"><span class="c0"></span></p><p class="c1 c2"><span class="c0"></span></p><p class="c1 c2"><span class="c0"></span></p>';
-
+	classy_editor.id = "classy_editor";
 	document.querySelector('.page').appendChild(classy_editor);
 }
-
-
-
 
 function show_footnotes() {
     var dls = footnotes_links;
@@ -491,15 +493,6 @@ function show_footnotes() {
 		var dl = dls[i];
 		var footnote = footnotes[dl];
 		document.querySelector('#footnotes_container').appendChild(footnote.note);					
-	}
-}
-
-function check_footnotes() {
-	if ( Object.keys(footnotes).length != footnotes_links.length ) {
-		window.setTimeout(check_footnotes, 500);
-	}
-	else {
-	show_footnotes();
 	}
 }
 
