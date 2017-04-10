@@ -1,10 +1,11 @@
+var user, token, doctitle;
 if (params) {
-	var user = params.user;
-	var token = params.token;
-	var doctitle = params.doctitle;
+	user = params.user;
+	token = params.token;
+	doctitle = params.doctitle;
 }
 else {
-	var params = {};
+	params = {};
 }
 
 function googledate() {
