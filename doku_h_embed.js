@@ -109,10 +109,13 @@ function h_embed() {
 		  return tag_search_promises;
 	  })
 	  .then(function (tag_search_promises) {
-		  Promise.all(tag_search_promises)
+//		  Promise.all(tag_search_promises)
+		  settle(tag_search_promises)
 			.then(function(){
 			    var footnotes_promises = make_footnotes_promises(footnotes_links);
-				Promise.all(footnotes_promises).then(function() {
+//				Promise.all(footnotes_promises)
+			  settle(footnotes_promises)
+					.then(function() {
 					var dls = Object.keys(footnotes);
 					for (var i=0; i<dls.length; i++) {
 						var dl = dls[i];
@@ -546,6 +549,23 @@ function heredoc(fn) {
  var b = a.slice(14, -3);
  return b;
 }
+
+
+function settle(promises) {
+  var alwaysFulfilled = promises.map(function (p) {
+    return p.then(
+      function onFulfilled(value) {
+        return { state: 'fulfilled', value: value };
+      },
+      function onRejected(reason) {
+		console.log ('rejected promise');
+        return { state: 'rejected', reason: reason };
+      }
+    );
+  });
+  return Promise.all(alwaysFulfilled);
+}
+
 
 
 
