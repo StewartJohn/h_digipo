@@ -8,9 +8,9 @@
     "page": "options.html",
     "chrome_style": true
   },
-"name": "Digipo",
-"description": "Tool support for the DigiPo fact-checking course",
-"homepage_url": "http://digipo.io",
+"name": "TOS_Annotate",
+"description": "Tool support for annotating Terms of Service",
+"homepage_url": "https://adamcroom.com/termsofservice/",
 "icons": {
      "16": "icon-16.png",
      "48": "icon-48.png",
@@ -26,6 +26,6 @@
      "tabs",
 	 "storage"
  ],
-"version": "1.1",
-"manifest_version": 2
+"version": "0.1",
+"manifest_version": 1
 }
