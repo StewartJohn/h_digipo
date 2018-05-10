@@ -1,23 +1,10 @@
-# h_digipo
-An annotation-powered toolkit for fact checking and investigative journalism. Works with Doku wiki and Hypothesis. (Can be adapted for any wiki, or indeed any content management system.)
+# Terms of Service Annotation
+This is a chrome extention for annotating terms of service.  
 
-See https://hypothes.is/blog/a-hypothesis-powered-toolkit-for-fact-checkers/ for description and video demos.
+This project was forked from Jon Udell's DigiPo extension, described here: http://digipo.io/doku.php?id=digipo:materials:digipo_extension
 
-The user guide for the DigiPo extension: http://digipo.io/doku.php?id=digipo:materials:digipo_extension
+## Purpose
+The tool is intended to help in crowd-sourcing annotations of educational technology companies' terms of service. We have prepared a set of questions that someone might be interested in asking about a company's terms of service.
 
-## The embed script
-
-In <tt>lib\tpl\dokuwiki\main.php</tt>, above <tt>&lt;-- wikipage stop --></tt>, put this:
-
-<pre>
-&lt;script>
-var s = document.createElement('script');
-s.src = "http://jonudell.net/h/doku_h_embed.js"; // or serve your own copy
-document.querySelector('.page').appendChild(s);
-&lt;/script>
-</pre>
-
-## The CORS proxy
-
-The embed script relies on https://github.com/judell/h_cors for now, because Hypothesis doesn't support CORS at /api/annotations (but will eventually)
-
+## How it Works
+Using this chrome extension, users can select text on a webpage, and then push that text along with other metadata as query parameters to a predefined website, in this case https://adamcroom.com/termsofservice/submit/. That website will then use those query parameters to prefill fields in a form. The user can modify or add to the form before submitting the information for the project's database.
