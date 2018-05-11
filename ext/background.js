@@ -7,6 +7,7 @@ var investigation_page_re = 'id=(' + investigation_namespace + ':[^\\"]+)\\"';
 var img = 'http://digipo.io/lib/exe/fetch.php?media=wiki:logo.png';
 var tags_from_host_url = host + control_namespace;
 
+/*
 chrome.storage.sync.get({
     user:'',
     token:'',
@@ -16,7 +17,7 @@ chrome.storage.sync.get({
     token = items.token;
 	digipo_page = items.digipo_page;
   });
-
+*/
 chrome.runtime.onMessage.addListener(
   function(request, sender, callback) {
 //alert('request.action: ' + request.action);
@@ -55,7 +56,7 @@ chrome.runtime.onMessage.addListener(
 		});
 		break;
 
-	  case 'receive_pubdate':
+/*	  case 'receive_pubdate':
 		var formatted_date = request.formatted_date
 		var tab_url = request.tab_url;
 		var doctitle = safe_doc_title(request.doctitle);
@@ -76,7 +77,7 @@ chrome.runtime.onMessage.addListener(
 		alert('unknown action', request.action);
 	}
 });
-
+*/
 
 // selection
 
@@ -233,6 +234,7 @@ chrome.contextMenus.create({
 	 }
 });
 
+/*
 chrome.contextMenus.create({
 	title: "Convert PDF to HTML (then Add Selection to Related Annotations)", 
 	documentUrlPatterns: ["chrome-extension://*/index.html"],
@@ -247,7 +249,7 @@ chrome.contextMenus.create({
 		});
 	}
 });
-
+*/
 
 chrome.contextMenus.create({
 	title: "Find Publication Date", 
@@ -262,7 +264,7 @@ chrome.contextMenus.create({
 	}
 });
 
-
+/* Neither of these actions seem applicable for TOS annotation
 chrome.contextMenus.create({
 	title: "Save Publication Date", 
 	contexts:["page"],
@@ -280,7 +282,6 @@ chrome.contextMenus.create({
 		});
 	}
 });
-
 
 chrome.contextMenus.create({
 	title: "Save Facebook Share Count", 
@@ -301,6 +302,7 @@ chrome.contextMenus.create({
 		});
 	 }
 });
+*/
 
 function sync_xhr_rows(url) {
   var xhr = new XMLHttpRequest();
